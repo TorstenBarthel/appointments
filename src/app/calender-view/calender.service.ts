@@ -18,9 +18,8 @@ export class CalenderService {
   public getJSON(): Observable<any> {
 
     return this.http.get(this._jsonURL).pipe(
-      delay(3000),
+      delay(1500),
       map(data => {
-        console.log(data)
         return data
       })
     );
@@ -40,4 +39,4 @@ export const colors: Record<string, EventColor> = {
     primary: '#e3bc08',
     secondary: '#FDF1BA',
   },
-};
+}

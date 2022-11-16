@@ -1,3 +1,55 @@
-.cal-month-view {
+.cal-month-view .cal-cell-top {
     height: 50px !important;
+    min-height: 50px !important;
 }
+
+.cal-month-view .cal-day-cell {
+    min-height: 50px !important;
+}
+
+.centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+}
+
+.cal-day-selected {
+    background-color: #cccccc !important;
+}
+
+.cal-cell-top {
+    position: relative; text-align: center;
+}
+
+.cal-day-badge {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+// .cal-current-time-marker {
+//   height: 3px;
+//   background: linear-gradient(270deg, #ec268d, #1f55dd);
+//   background-size: 400% 400%;
+//   animation: background-fade 5s ease infinite;
+
+//   @keyframes background-fade {
+//     0% {
+//       background-position: 0 50%;
+//     }
+
+//     50% {
+//       background-position: 100% 50%;
+//     }
+
+//     100% {
+//       background-position: 0 50%;
+//     }
+//   }
+// }

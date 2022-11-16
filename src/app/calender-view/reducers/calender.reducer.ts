@@ -1,4 +1,4 @@
-import { Action, createReducer, on } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import * as CalenderActions from '../actions/calender.actions';
 
 export const calenderFeatureKey = 'calendar';
@@ -22,6 +22,7 @@ export const reducer = createReducer(
       loading: true
     }
   }),
+
   on(CalenderActions.loadCalendersSuccess, (state, action) => {
 
     console.log(action)
@@ -32,13 +33,14 @@ export const reducer = createReducer(
       loading: false
     }
   }),
+
   on(CalenderActions.loadCalendersFailure, (state, action) => state),
 
-  on(CalenderActions.daySelected, (state, action) => {
-    return {
-      ...state,
-      date: action.date
-    }
-  })
+  // on(CalenderActions.daySelected, (state, action) => {
+  //   return {
+  //     ...state,
+  //     date: action.date
+  //   }
+  // })
 
 );

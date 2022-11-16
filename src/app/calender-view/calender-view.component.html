@@ -1,48 +1,39 @@
-
-<div *ngIf="loading$ | async"><h1>TEST</h1></div>
-
 <div class="container">
   <div class="row">
-    <div class="col">
-      
-    </div>
-  </div>
-  <div class="row">
     <div class="col-4">
-      <app-month-view [viewDate]="viewDate" [events]="appointments" (viewDateChange)="changeViewDate($event)"></app-month-view>
-      <app-next-viewing></app-next-viewing> 
+
+      <!-- trick type checking through Assertion operator -->
+      <app-month-view [viewDate]="viewDate" [events]="(appointments$ | async)!" (viewDateChange)="changeViewDate($event)">
+      </app-month-view>
+
+      <app-next-viewing></app-next-viewing>
+
     </div>
-    <div class="col-8">
-      
+    <div class="col-8" style="position: relative;">
+
       <app-calendar-header [(view)]="view" [(viewDate)]="viewDate">
       </app-calendar-header>
 
-      <mwl-calendar-week-view [viewDate]="viewDate" [events]="appointments" [headerTemplate]="headerTemplate"
-        [eventTemplate]="eventTemplate" [dayStartHour]="8"
-        [dayEndHour]="20">
+      <mwl-calendar-week-view [viewDate]="viewDate" [events]="(appointments$ | async)!" [headerTemplate]="headerTemplate"
+        [eventTemplate]="eventTemplate" [dayStartHour]="8" [dayEndHour]="20"
+        [currentTimeMarkerTemplate]="currentTimeMarkerTemplate">
       </mwl-calendar-week-view>
+
     </div>
   </div>
-  <div class="row">
-    
-  </div>
 </div>
-
-
 
 <ng-template #headerTemplate let-days="days" let-locale="locale" let-dayClicked="dayClicked"
   let-eventDropped="eventDropped">
   <div class="cal-day-headers cursor-default">
     <div class="cal-header" *ngFor="let day of days" [class.cal-past]="day.isPast" [class.cal-future]="day.isFuture"
-      [class.cal-drag-over]="day.dragOver" (mwlClick)="dayClicked.emit({date: day.date})" mwlDroppable
-      (dragEnter)="day.dragOver = true" (dragLeave)="day.dragOver = false"
-      (drop)="day.dragOver = false; eventDropped.emit({event: $event.dropData.event, newStart: day.date, fromHeader: true})">
+      [class.cal-drag-over]="day.dragOver" (mwlClick)="dayClicked.emit({date: day.date})">
       <div class="top" [class.today]="day.isToday">
         <div class="day-label text-uppercase">
-          {{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}&nbsp;{{ day.date |
-          calendarDate:'weekViewColumnHeader':locale }}
+          
+          {{ day.date.getDate() }}&nbsp;{{ dayNames[day.date.getDay()] }}
+        
         </div>
-        <!-- <div class="day-number">{{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</div>                       -->
       </div>
     </div>
   </div>
@@ -54,29 +45,42 @@
       [ngStyle]="{ backgroundColor: weekEvent.event.color?.primary }">
 
     </div>
+
     {{weekEvent.event.title}}
+
   </div>
 </ng-template>
 
+<ng-template #currentTimeMarkerTemplate let-columnDate="columnDate" let-dayStartHour="dayStartHour"
+  let-dayStartMinute="dayStartMinute" let-dayEndHour="dayEndHour" let-dayEndMinute="dayEndMinute"
+  let-isVisible="isVisible" let-topPx="topPx">
+  <div class="cal-current-time-marker" *ngIf="isVisible && showMarker" [style.top.px]="topPx"></div>
+</ng-template>
 
-
-
-
-
-
-
-
-
+<!-- appointment modal -->
 <ng-template #modalContent let-close="close">
   <div class="modal-header">
-    <h5 class="modal-title">Event action occurred</h5>
+    <h5 class="modal-title">{{ eventsData.start | date: 'fullDate' }}</h5>
     <button type="button" class="close" (click)="close()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <div>
-      TEST
+    <div style="width: 100%;text-align: right;">
+      <div>
+        <div class="btn-group">
+          <div class="btn btn-outline-primary" style="border-color: #ccc;"
+            (click)="switchEvent('left')">
+            <i class="bi-caret-left" style="color: cornflowerblue;"></i>
+  
+          </div>
+          <div class="btn btn-outline-primary" style="border-color: #ccc;"
+            (click)="switchEvent('right')">
+            <i class="bi-caret-right" style="color: cornflowerblue;"></i>
+  
+          </div>
+        </div>
+      </div>
     </div>
     <div>
       Event:
@@ -84,7 +88,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="close()">
+    <button type="button" class="btn btn-outline-secondary" (click)="close()" ngbAutofocus>
       OK
     </button>
   </div>

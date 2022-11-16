@@ -1,10 +1,9 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { CalendarEvent, CalendarView } from 'angular-calendar';
+import { CalendarEvent, CalendarView, CalendarMonthViewDay } from 'angular-calendar';
 
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { select, Store } from '@ngrx/store'
 import { State } from '../../reducers/calender.reducer'
-import { daySelected } from '../../actions/calender.actions';
 
 import { getAllAppointments, getAppointmentsLoading } from '../../selectors/calender.selectors';
 
@@ -21,30 +20,39 @@ export class MonthViewComponent implements OnInit {
   view: CalendarView = CalendarView.Month;
 
   @Input() viewDate: Date
-
   @Input() events: CalendarEvent[]
-
   @Output() viewDateChange = new EventEmitter<Date>();
+
+  selectedDay: any
+
+  dayNames = [
+    'S', 'M', 'D', 'M', 'D', 'F', 'S'  
+  ]
 
   constructor(private store: Store<State>) { }
 
   ngOnInit(): void {
+
     this.appointments$ = this.store.pipe(select(getAllAppointments))
     this.loading$ = this.store.pipe(select(getAppointmentsLoading))
-
-
   }
 
-  dayClicked($event: any): void {
-    console.log('day-clicked:: ', $event)
+  dayClicked($event: CalendarMonthViewDay): void {
 
-    this.viewDateChange.emit($event) // $event.date
+    this.viewDate = new Date($event.date)
+    this.selectedDay = $event
+  }
 
-    console.log(this.viewDateChange)
-
-    // this.store.dispatch(daySelected({date: $event.date}))
-
-
+  beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
+        
+    body.forEach((day) => {
+      if (
+        this.selectedDay  && this.selectedDay.date.getTime() === day.date.getTime()
+        )
+       {
+        day.cssClass = 'cal-day-selected';
+      }
+    });
   }
 
 }
