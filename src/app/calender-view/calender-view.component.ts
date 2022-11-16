@@ -23,22 +23,17 @@ import {
   CalendarEventTimesChangedEvent,
   CalendarView,
 } from 'angular-calendar';
-import { EventColor } from 'calendar-utils';
+// import { EventColor } from 'calendar-utils';
 
-const colors: Record<string, EventColor> = {
-  red: {
-    primary: '#ad2121',
-    secondary: '#FAE3E3',
-  },
-  blue: {
-    primary: '#1e90ff',
-    secondary: '#D1E8FF',
-  },
-  yellow: {
-    primary: '#e3bc08',
-    secondary: '#FDF1BA',
-  },
-};
+import { select, Store } from '@ngrx/store'
+import { State } from './reducers/calender.reducer'
+import { loadCalenders } from './actions/calender.actions';
+import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators'
+
+import { getAllAppointments, getAppointmentsLoading } from './selectors/calender.selectors';
+
+import { colors } from './calender.service'
 
 @Component({
   selector: 'app-calender-view',
@@ -48,79 +43,54 @@ const colors: Record<string, EventColor> = {
 })
 export class CalenderViewComponent implements OnInit {
 
-  view: CalendarView = CalendarView.Month;
+  view: CalendarView = CalendarView.Week;
 
   @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
 
   viewDate: Date = new Date();
 
- //  events: CalendarEvent[] = [];
-
-  events: CalendarEvent[] = [
-    {
-      start: subDays(startOfDay(new Date()), 1),
-      end: addDays(new Date(), 1),
-      title: 'A 3 day event',
-      color: { ...colors.red },
-      actions: [], // this.actions,
-      allDay: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-    {
-      start: startOfDay(new Date()),
-      title: 'An event with no end date',
-      color: { ...colors.yellow },
-      actions: [], // this.actions,
-    },
-    {
-      start: subDays(endOfMonth(new Date()), 3),
-      end: addDays(endOfMonth(new Date()), 3),
-      title: 'A long event that spans 2 months',
-      color: { ...colors.blue },
-      allDay: true,
-    },
-    {
-      start: addHours(startOfDay(new Date()), 2),
-      end: addHours(new Date(), 2),
-      title: 'A draggable and resizable event',
-      color: { ...colors.yellow },
-      actions: [], // this.actions,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-  ];
-
-
-  // ---
   locale = 'de'
 
   eventsData: CalendarEvent
 
-  constructor(private modal: NgbModal) {}
+  appointments$: Observable<Array<any>>
+  appointments: Array<any>
+
+  loading$: Observable<boolean>
+
+  constructor(private modal: NgbModal, private store: Store<State>) {}
 
   ngOnInit(): void {
+    // this.appointments$ = this.store.pipe(select(getAllAppointments))
+    this.loading$ = this.store.pipe(select(getAppointmentsLoading))
 
+    this.store.pipe(
+       
+      select(getAllAppointments)).subscribe(res => {
+        console.log('res:: ', res )
+
+        this.appointments = res
+    })
+
+    this.store.dispatch(loadCalenders())
   }
 
   onHourClick($event: CalendarEvent): void {
     console.log('hour-click:: ', $event)
 
+    this.openModal($event)
+  }
+
+  private openModal($event: CalendarEvent): void {
+        
     this.eventsData = $event;
     this.modal.open(this.modalContent, { size: 'lg' });
   }
 
-  // new
-  openModal($event: CalendarEvent): void {
-        
-    this.eventsData = $event;
-    this.modal.open(this.modalContent, { size: 'lg' });
+  changeViewDate($event: any): void {
+    console.log('new-view-date:: ', $event)
+
+    this.viewDate = new Date($event)
   }
 
   /* @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;

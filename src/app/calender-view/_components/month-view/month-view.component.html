@@ -1,5 +1,9 @@
-<mwl-calendar-month-view [viewDate]="viewDate" [events]="events" [cellTemplate]="cellTemplate">
+<app-calendar-header [(view)]="view" [(viewDate)]="viewDate">
+</app-calendar-header>
+<mwl-calendar-month-view [viewDate]="viewDate" [events]="events" [cellTemplate]="cellTemplate" (dayClicked)="viewDateChange.next($event.day.date)">
 </mwl-calendar-month-view>
+
+<div *ngIf="loading$ | async"><h1>TEST</h1></div>
 
 <!-- custom tpl for month view -->
 <ng-template #cellTemplate let-day="day" let-locale="locale">

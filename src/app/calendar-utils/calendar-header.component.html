@@ -1,5 +1,9 @@
-<div class="row text-center">
-    <div class="col-md-4">
+<div class="row"> <!-- text-center-->
+    
+    <div class="col-md-8">
+      <h5>{{ viewDate | calendarDate: view + 'ViewTitle':locale }}</h5>
+    </div>
+    <div class="col-md-4" style="text-align: right;">
       <div class="btn-group">
         <div
           class="btn btn-primary"
@@ -8,7 +12,8 @@
           [(viewDate)]="viewDate"
           (viewDateChange)="viewDateChange.next(viewDate)"
         >
-          Previous
+        <i class="bi-caret-left" style="color: cornflowerblue;"></i>
+
         </div>
         <div
           class="btn btn-outline-secondary"
@@ -16,7 +21,8 @@
           [(viewDate)]="viewDate"
           (viewDateChange)="viewDateChange.next(viewDate)"
         >
-          Today
+        <i class="bi-clock" style="color: cornflowerblue;"></i>
+
         </div>
         <div
           class="btn btn-primary"
@@ -25,12 +31,10 @@
           [(viewDate)]="viewDate"
           (viewDateChange)="viewDateChange.next(viewDate)"
         >
-          Next
+        <i class="bi-caret-right" style="color: cornflowerblue;"></i>
+        
         </div>
       </div>
-    </div>
-    <div class="col-md-4">
-      <h3>{{ viewDate | calendarDate: view + 'ViewTitle':locale }}</h3>
     </div>
     
   </div>

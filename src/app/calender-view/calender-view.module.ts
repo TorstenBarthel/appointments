@@ -12,15 +12,15 @@ import { CalendarUtilsModule } from '../calendar-utils/calendar-utils.module'
 
 import { FormsModule } from '@angular/forms';
 import { MonthViewComponent } from './_components/month-view/month-view.component';
+import { NextViewingComponent } from './_components/next-viewing/next-viewing.component';
 
-// import { ContextMenuModule } from 'ngx-contextmenu'
-
-
+import { CalenderService } from './calender.service'
 
 @NgModule({
   declarations: [
     CalenderViewComponent,
     MonthViewComponent,
+    NextViewingComponent,
   ],
   imports: [
     CommonModule,
@@ -32,8 +32,10 @@ import { MonthViewComponent } from './_components/month-view/month-view.componen
     }),
     CalendarUtilsModule,
     FormsModule
-    // ContextMenuModule.forRoot()
 
+  ],
+  providers: [
+    CalenderService
   ],
   exports: [
     CalenderViewComponent

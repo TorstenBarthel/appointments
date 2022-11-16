@@ -1,23 +1,30 @@
 
+<div *ngIf="loading$ | async"><h1>TEST</h1></div>
+
 <div class="container">
   <div class="row">
     <div class="col">
-      <mwl-demo-utils-calendar-header [(view)]="view" [(viewDate)]="viewDate">
-      </mwl-demo-utils-calendar-header>
+      
     </div>
   </div>
   <div class="row">
-    <div class="col-3">
-      <app-month-view [viewDate]="viewDate" [events]="events"></app-month-view>
+    <div class="col-4">
+      <app-month-view [viewDate]="viewDate" [events]="appointments" (viewDateChange)="changeViewDate($event)"></app-month-view>
+      <app-next-viewing></app-next-viewing> 
     </div>
-    <div class="col-9">
+    <div class="col-8">
       
+      <app-calendar-header [(view)]="view" [(viewDate)]="viewDate">
+      </app-calendar-header>
 
-
-      <mwl-calendar-week-view [viewDate]="viewDate" [events]="events" [headerTemplate]="headerTemplate"
-        [eventTemplate]="eventTemplate">
+      <mwl-calendar-week-view [viewDate]="viewDate" [events]="appointments" [headerTemplate]="headerTemplate"
+        [eventTemplate]="eventTemplate" [dayStartHour]="8"
+        [dayEndHour]="20">
       </mwl-calendar-week-view>
     </div>
+  </div>
+  <div class="row">
+    
   </div>
 </div>
 

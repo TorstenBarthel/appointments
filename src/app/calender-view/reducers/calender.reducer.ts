@@ -1,7 +1,7 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import * as CalenderActions from '../actions/calender.actions';
 
-export const calenderFeatureKey = 'calender';
+export const calenderFeatureKey = 'calendar';
 
 export interface State {
   appointments: Array<any>,
@@ -23,11 +23,22 @@ export const reducer = createReducer(
     }
   }),
   on(CalenderActions.loadCalendersSuccess, (state, action) => {
+
+    console.log(action)
+
     return {
       ...state,
-      appointments: action.data.appointments
+      appointments: action.data,
+      loading: false
     }
   }),
   on(CalenderActions.loadCalendersFailure, (state, action) => state),
+
+  on(CalenderActions.daySelected, (state, action) => {
+    return {
+      ...state,
+      date: action.date
+    }
+  })
 
 );
