@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { select, Store } from '@ngrx/store'
 
@@ -64,7 +64,7 @@ export class CalenderViewComponent implements OnInit  {
 
     this.store.dispatch(setSelectedAppointment({ selectedAppointment: $event }))
     
-    this.modal.open(this.modalContent, { size: 'lg' });
+    this.modal.open(this.modalContent); // { size: 'lg' }
   }
 
   changeViewDate($event: any): void {

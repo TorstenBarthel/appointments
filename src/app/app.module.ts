@@ -12,7 +12,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { reducers, metaReducers } from './reducers';
 
 import { CalenderViewModule } from './calender-view/calender-view.module';
-import { CalendarModule } from 'angular-calendar';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 
 import { registerLocaleData } from '@angular/common';

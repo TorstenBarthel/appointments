@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, concatMap, switchMap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 
 import { select, Store } from '@ngrx/store'
 import { State } from '../reducers/calender.reducer'
@@ -14,11 +14,8 @@ import {
 } from 'date-fns';
 
 import * as CalenderActions from '../actions/calender.actions';
-
 import { CalenderService, colors } from '../calender.service'
-
 import { CalendarEvent } from 'angular-calendar'
-
 import { getAllAppointments } from '../selectors/calender.selectors';
 
 @Injectable()
@@ -37,8 +34,6 @@ export class CalenderEffects {
   
           this.calenderService.getJSON().pipe(
             map(data => {
-
-              const testEntriesLength = 4
   
               // format data accordingly
               const apiData = data.data
@@ -46,12 +41,14 @@ export class CalenderEffects {
               // better create interface for API response
               const formatedData: Array<CalendarEvent> = apiData.appointments.nodes.map((event: any, index: number) => {
   
-                // set years of sample data to 22 for easy access
+                // set date of sample data to 11.2022 for easy access
                 const startDate = new Date(event.date)
                 startDate.setFullYear(2022)
+                startDate.setMonth(10)
   
                 const endDate = new Date(event.date)
                 endDate.setFullYear(2022)
+                endDate.setMonth(10)
   
                 const formatedObj = {
                   start: startDate,
@@ -61,18 +58,26 @@ export class CalenderEffects {
                   allDay: false,
                   meta: {
                     ...event,
-                    system: {
-                      index,
-                      length: apiData.appointments.nodes.length + testEntriesLength
-                    }
+                    lastElement: false,
+                    firstElement: false
                   }
                 } 
   
                 return formatedObj
               })
-  
-              // dispatch action: Also add some additional smaple data
-              return CalenderActions.loadCalendersSuccess({ data: [...formatedData, ...events] })
+
+              // Also add some additional smaple data: Not anymore
+              const appointments = [...formatedData] // , ...events]
+
+              appointments.sort((a,b)=>a.start.getTime() - b.start.getTime());
+
+              if (appointments.length > 0) {
+                appointments[0].meta.firstElement = true
+                appointments[appointments.length - 1].meta.lastElement = true
+              }
+
+              // dispatch action
+              return CalenderActions.loadCalendersSuccess({ data: appointments })
             }),
             catchError(error => of(CalenderActions.loadCalendersFailure({ error }))))
         )
@@ -101,8 +106,16 @@ export class CalenderEffects {
       }),
       map(([appointments, action]) => {
 
-        const formerIndex: number = action.formerEvent.meta.system.index
-        const appointsLength = action.formerEvent.meta.system.length
+        const appointsLength = appointments.length
+
+        let formerIndex: number = 0
+
+        // get former shown appointment to calc. new index
+        appointments.map((appoints: CalendarEvent, index: number) => {
+          if (appoints === action.formerEvent) {
+            formerIndex = index
+          }
+        })
 
         let newIndex: number = formerIndex
 
@@ -123,12 +136,33 @@ export class CalenderEffects {
 
         const appointment = appointments[newIndex]
 
-        return CalenderActions.getEventBeforeAfterEventSuccess({ eventToDisplay: appointment}) 
+        /**
+         * @info Error: Cannot assign to readonly property:
+         *       Its not possible to change store here (of course)
+         *       But its also not neccessary since firstElement/lastElement
+         *       are setup when retrieving apppointments 
+         */
+
+        // mark as last or first element: For hiding buttons
+        // let firstElement = false
+        // let lastElement = false
+
+        // if (newIndex === 0) {
+        //   firstElement = true
+        // } else if (newIndex === appointsLength - 1) {
+        //   lastElement = true
+        // }
+
+        // appointment.meta.firstElement = firstElement
+        // appointment.meta.lastElement = lastElement
+
+        return CalenderActions.getEventBeforeAfterEventSuccess({ eventToDisplay: appointment }) 
       })
     )
   })
 }
 
+// additional test data
 const events: CalendarEvent<any>[] = [
   {
     start: subDays(startOfDay(new Date()), 1),
@@ -137,24 +171,14 @@ const events: CalendarEvent<any>[] = [
     color: { ...colors.red },
     actions: [],
     allDay: false,
-    meta: {
-      system: {
-        index: 3,
-        length: 7
-      }
-    }
+    meta: {}
   },
   {
     start: startOfDay(new Date()),
     title: 'Mittem im Grünen',
     color: { ...colors.yellow },
     actions: [],
-    meta: {
-      system: {
-      index: 4,
-      length: 7
-      }
-    }
+    meta: {}
   },
   {
     start: subDays(endOfMonth(new Date()), 3),
@@ -162,12 +186,7 @@ const events: CalendarEvent<any>[] = [
     title: 'A long event that spans 2 months',
     color: { ...colors.blue },
     allDay: true,
-    meta: {
-      system: {
-      index: 5,
-      length: 7
-      }
-    }
+    meta: {}
   },
   {
     start: addHours(startOfDay(new Date()), 12),
@@ -175,11 +194,6 @@ const events: CalendarEvent<any>[] = [
     title: 'A draggable and resizable event',
     color: { ...colors.yellow },
     actions: [],
-    meta: {
-      system: {
-        index: 6,
-        length: 7
-      }
-    }
+    meta: {}
   },
 ];

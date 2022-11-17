@@ -7,9 +7,37 @@ pre {
     padding: 15px;
 }
 
+// appointment modal
 .close, .close:focus, .close:active {
   border: none !important;
   background: none;
+}
+
+.list-group {
+  padding-left: 0;
+}
+
+.card {
+  margin-top: 10px;
+}
+
+.button-wrapper {
+  width: 100%;
+  text-align: right;
+}
+
+.title {
+  font-size: small;
+}
+
+.sub-title {
+  color: #999;
+  font-size: smaller;
+}
+
+.appointment-list {
+  margin-top: 40px;
+  padding-left: 0;
 }
 
 .cal-current-time-marker {
@@ -32,3 +60,4 @@ pre {
       }
     }
   }
+  

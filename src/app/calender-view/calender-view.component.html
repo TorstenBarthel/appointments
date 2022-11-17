@@ -3,7 +3,8 @@
     <div class="col-4">
 
       <!-- trick type checking through Assertion operator -->
-      <app-month-view [viewDate]="viewDate" [events]="(appointments$ | async)!" (viewDateChange)="changeViewDate($event)">
+      <app-month-view [viewDate]="viewDate" [events]="(appointments$ | async)!"
+        (viewDateChange)="changeViewDate($event)">
       </app-month-view>
 
       <app-next-viewing></app-next-viewing>
@@ -14,8 +15,8 @@
       <app-calendar-header [(view)]="view" [(viewDate)]="viewDate" [displayNowBtn]="true">
       </app-calendar-header>
 
-      <mwl-calendar-week-view [viewDate]="viewDate" [events]="(appointments$ | async)!" [headerTemplate]="headerTemplate"
-        [eventTemplate]="eventTemplate" [dayStartHour]="8" [dayEndHour]="20"
+      <mwl-calendar-week-view [viewDate]="viewDate" [events]="(appointments$ | async)!"
+        [headerTemplate]="headerTemplate" [eventTemplate]="eventTemplate" [dayStartHour]="8" [dayEndHour]="20"
         [currentTimeMarkerTemplate]="currentTimeMarkerTemplate">
       </mwl-calendar-week-view>
 
@@ -30,9 +31,9 @@
       [class.cal-drag-over]="day.dragOver" (mwlClick)="dayClicked.emit({date: day.date})">
       <div class="top" [class.today]="day.isToday">
         <div class="day-label text-uppercase">
-          
+
           {{ day.date.getDate() }}&nbsp;{{ dayNames[day.date.getDay()] }}
-        
+
         </div>
       </div>
     </div>
@@ -40,13 +41,14 @@
 </ng-template>
 
 <ng-template #eventTemplate let-weekEvent="weekEvent" let-locale="locale">
-  <div (click)="onHourClick(weekEvent.event)">
-    <div class="eventColorMark" style="height: 20px; width: 20px; border-radius: 10px;"
+  <div (click)="onHourClick(weekEvent.event)" class="d-flex flex-row">
+    <div class="eventColorMark" style="height: 10px; width: 10px; border-radius: 5px;"
       [ngStyle]="{ backgroundColor: weekEvent.event.color?.primary }">
 
     </div>
-
-    {{weekEvent.event.title}}
+    <div style="font-size: 12px;">
+      {{weekEvent.event.title}}
+    </div>
 
   </div>
 </ng-template>
@@ -58,38 +60,94 @@
 </ng-template>
 
 <!-- appointment modal -->
+<!-- @todo Currently just one appointment at a time, display all for that hour -->
 <ng-template #modalContent let-close="close">
-  <div class="modal-header">
-    <h5 class="modal-title">{{ (selectedAppointment$ | async)?.start }}</h5>
-    <button type="button" class="close" (click)="close()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <ng-container *ngrxLet="selectedAppointment$ as selApp">
-    <div style="width: 100%;text-align: right;">
-      <div>
+  <ng-container *ngrxLet="selectedAppointment$ as selApp">
+    <div class="modal-header">
+      <h6 class="modal-title">
+        <i class="bi-calendar3" style="color: cornflowerblue;"></i>&nbsp;
+        {{ selApp.start | date: 'fullDate' }}
+        &nbsp;<i class="bi-clock" style="color: cornflowerblue;"></i>&nbsp;
+        {{ selApp.start.getHours() }} -
+        {{ selApp.start.getHours() + 1 }}&nbsp;Uhr
+      </h6>
+      <button type="button" class="close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="button-wrapper">
+
+        <!--
+          appointment.meta.firstElement/lastElement was introduced to provide
+          cappabilies to hide the buttons if no more appointments to come.
+          First that was programmed to cycle (and is but has no effect since buttons
+          are hidden)
+        -->
+
         <div class="btn-group">
-          <div class="btn btn-outline-primary" style="border-color: #ccc;"
-            (click)="switchEvent('left', selApp)">
+          <div class="btn btn-outline-primary" style="border-color: #ccc;" (click)="switchEvent('left', selApp)"
+            *ngIf="!selApp.meta.firstElement">
             <i class="bi-caret-left" style="color: cornflowerblue;"></i>
-  
+
           </div>
-          <div class="btn btn-outline-primary" style="border-color: #ccc;"
-            (click)="switchEvent('right', selApp)">
+          <div class="btn btn-outline-primary" style="border-color: #ccc;" (click)="switchEvent('right', selApp)"
+            *ngIf="!selApp.meta.lastElement">
             <i class="bi-caret-right" style="color: cornflowerblue;"></i>
-  
+
+          </div>
+        </div>
+
+      </div>
+      <div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-8">
+                <div class="immo-image-example"></div>
+                {{ selApp.title }}
+                <div class="sub-title">
+                  {{ selApp.meta.property?.address.street }}
+                  {{ selApp.meta.property?.address.houseNumber }},
+                  {{ selApp.meta.property?.address.city }},
+                  {{ selApp.meta.property?.address.country }}
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="agent-image-example"></div>
+                {{ selApp.meta.property?.user.profile.firstname }}&nbsp;{{ selApp.meta.property?.user.profile.name }}
+                <br>
+                <div class="sub-title">Agent</div>
+              </div>
+            </div>
+
+            <ul class="list-group list-group-light" class="appointment-list">
+              <li class="list-group-item" class="d-flex justify-content-between">
+
+                <div>
+                  <i class="bi-calendar3" style="color: cornflowerblue;"></i>
+                  {{ selApp.start | date: 'longDate' }}&nbsp;
+                </div>
+                <div>
+                  <i class="bi-clock" style="color: cornflowerblue;"></i>
+                  {{ selApp.start | date: 'shortTime' }} - {{ selApp.end | date: 'shortTime' }}&nbsp;
+                </div>
+                <div>
+                  <i class="bi-person-circle" style="color: cornflowerblue;"></i>
+                  {{ selApp.meta.attendeeCount }} | {{ selApp.meta.maxInviteeCount }}
+                </div>
+              </li>
+
+            </ul>
           </div>
         </div>
       </div>
-    </div>
-    <div>
-      Event:
-      <pre>{{ selApp | json }}</pre>
-    </div>
 
-    </ng-container>
-  </div>
+
+    </div>
+  </ng-container>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="close()" ngbAutofocus>
       OK

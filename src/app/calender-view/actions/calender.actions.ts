@@ -1,6 +1,5 @@
 import { createAction, props } from '@ngrx/store';
 import { CalendarEvent } from 'angular-calendar';
-import { CalendarEventTitlePipe } from 'angular-calendar/modules/common/calendar-event-title.pipe';
 
 export enum CalenderActionTypes {
   LoadCalenders = '[Calender] Load Calenders',
@@ -39,7 +38,7 @@ export const getEventBeforeAfterEventSuccess = createAction(
 
 export const setSelectedAppointment = createAction(
   CalenderActionTypes.SetSelectedAppointment,
-  props<{ selectedAppointment: CalendarEvent}>()
+  props<{ selectedAppointment: CalendarEvent }>()
 )
 
 export type CalenderActionsUnionType = 
