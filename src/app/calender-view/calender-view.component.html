@@ -11,7 +11,7 @@
     </div>
     <div class="col-8" style="position: relative;">
 
-      <app-calendar-header [(view)]="view" [(viewDate)]="viewDate">
+      <app-calendar-header [(view)]="view" [(viewDate)]="viewDate" [displayNowBtn]="true">
       </app-calendar-header>
 
       <mwl-calendar-week-view [viewDate]="viewDate" [events]="(appointments$ | async)!" [headerTemplate]="headerTemplate"
@@ -60,22 +60,23 @@
 <!-- appointment modal -->
 <ng-template #modalContent let-close="close">
   <div class="modal-header">
-    <h5 class="modal-title">{{ eventsData.start | date: 'fullDate' }}</h5>
+    <h5 class="modal-title">{{ (selectedAppointment$ | async)?.start }}</h5>
     <button type="button" class="close" (click)="close()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
+    <ng-container *ngrxLet="selectedAppointment$ as selApp">
     <div style="width: 100%;text-align: right;">
       <div>
         <div class="btn-group">
           <div class="btn btn-outline-primary" style="border-color: #ccc;"
-            (click)="switchEvent('left')">
+            (click)="switchEvent('left', selApp)">
             <i class="bi-caret-left" style="color: cornflowerblue;"></i>
   
           </div>
           <div class="btn btn-outline-primary" style="border-color: #ccc;"
-            (click)="switchEvent('right')">
+            (click)="switchEvent('right', selApp)">
             <i class="bi-caret-right" style="color: cornflowerblue;"></i>
   
           </div>
@@ -84,8 +85,10 @@
     </div>
     <div>
       Event:
-      <pre>{{ eventsData | json }}</pre>
+      <pre>{{ selApp | json }}</pre>
     </div>
+
+    </ng-container>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="close()" ngbAutofocus>

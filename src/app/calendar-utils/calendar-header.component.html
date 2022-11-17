@@ -1,17 +1,17 @@
 <div class="container">
   <div class="row">
 
-    <div class="col-md-8">
+    <div class="col-md-6">
       <h5>{{ viewDate | calendarDate: view + 'ViewTitle':locale }}</h5>
     </div>
-    <div class="col-md-4" style="text-align: right;">
+    <div class="col-md-6" style="text-align: right;">
       <div class="btn-group">
         <div class="btn btn-outline-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
           (viewDateChange)="viewDateChange.next(viewDate)" style="border-color: #ccc;">
           <i class="bi-caret-left" style="color: cornflowerblue;"></i>
 
         </div>
-        <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate"
+        <div *ngIf="displayNowBtn" class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate"
           (viewDateChange)="viewDateChange.next(viewDate)" style="border-color: #ccc;">
           <i class="bi-clock" style="color: cornflowerblue;"></i>
 

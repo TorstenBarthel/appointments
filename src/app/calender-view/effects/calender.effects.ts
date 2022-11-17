@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, concatMap } from 'rxjs/operators';
+import { catchError, map, concatMap, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+
+import { select, Store } from '@ngrx/store'
+import { State } from '../reducers/calender.reducer'
 
 import {
   startOfDay,
@@ -16,53 +19,114 @@ import { CalenderService, colors } from '../calender.service'
 
 import { CalendarEvent } from 'angular-calendar'
 
+import { getAllAppointments } from '../selectors/calender.selectors';
+
 @Injectable()
 export class CalenderEffects {
 
   constructor(
-    private actions$: Actions<CalenderActions.CalenderActionsType>, 
-    private calenderService: CalenderService) {}
+    private actions$: Actions<CalenderActions.CalenderActionsUnionType>,
+    private calenderService: CalenderService,
+    private store: Store<State>) { }
 
-  loadCalenders$ = createEffect(() => {
+    loadCalenders$ = createEffect(() => {
+      return this.actions$.pipe(
+  
+        ofType(CalenderActions.loadCalenders),
+        concatMap(() =>
+  
+          this.calenderService.getJSON().pipe(
+            map(data => {
+
+              const testEntriesLength = 4
+  
+              // format data accordingly
+              const apiData = data.data
+              
+              // better create interface for API response
+              const formatedData: Array<CalendarEvent> = apiData.appointments.nodes.map((event: any, index: number) => {
+  
+                // set years of sample data to 22 for easy access
+                const startDate = new Date(event.date)
+                startDate.setFullYear(2022)
+  
+                const endDate = new Date(event.date)
+                endDate.setFullYear(2022)
+  
+                const formatedObj = {
+                  start: startDate,
+                  end: endDate,
+                  title: event.property.name,
+                  color: { ...colors.yellow },
+                  allDay: false,
+                  meta: {
+                    ...event,
+                    system: {
+                      index,
+                      length: apiData.appointments.nodes.length + testEntriesLength
+                    }
+                  }
+                } 
+  
+                return formatedObj
+              })
+  
+              // dispatch action: Also add some additional smaple data
+              return CalenderActions.loadCalendersSuccess({ data: [...formatedData, ...events] })
+            }),
+            catchError(error => of(CalenderActions.loadCalendersFailure({ error }))))
+        )
+      );
+    });
+
+  getEventBeforeAfterEvent$ = createEffect(() => {
+
+    let action: any = null
+
     return this.actions$.pipe(
+      
+      ofType(CalenderActions.getEventBeforeAfterEvent),
+      map(val => {
 
-      ofType(CalenderActions.loadCalenders),
-      concatMap(() =>
+        action = val
+      }),
+      switchMap(() => {
+        return this.store.pipe(
+          select(getAllAppointments),
+          map (appointments => {
 
-        this.calenderService.getJSON().pipe(
-          map(data => {
+            return [appointments, action]
+          })
+        )
+      }),
+      map(([appointments, action]) => {
 
-            // format data accordingly
-            const apiData = data.data
+        const formerIndex: number = action.formerEvent.meta.system.index
+        const appointsLength = action.formerEvent.meta.system.length
 
-            const formatedData: Array<CalendarEvent> = apiData.appointments.nodes.map((event: any) => {
+        let newIndex: number = formerIndex
 
-              // set years of sample data to 22 for easy access
-              const startDate = new Date(event.date)
-              startDate.setFullYear(2022)
+        if (action.dir === 'right') {
 
-              const endDate = new Date(event.date)
-              endDate.setFullYear(2022)
+          if (formerIndex < appointsLength - 1) {
+            newIndex++
+          } else {
+            newIndex = 0
+          }
+        } else {
+          if (formerIndex > 0) {
+            newIndex--
+          } else {
+            newIndex = appointsLength - 1
+          }
+        }
 
-              const formatedObj = {
-                start: startDate,
-                end: endDate,
-                title: event.property.name,
-                color: { ...colors.yellow },
-                allDay: false,
-                meta: event
-              } 
+        const appointment = appointments[newIndex]
 
-              return formatedObj
-            })
-
-            // dispatch action: Also add some add. smaple data
-            return CalenderActions.loadCalendersSuccess({ data: [...formatedData, ...events] })
-          }),
-          catchError(error => of(CalenderActions.loadCalendersFailure({ error }))))
-      )
-    );
-  });
+        return CalenderActions.getEventBeforeAfterEventSuccess({ eventToDisplay: appointment}) 
+      })
+    )
+  })
 }
 
 const events: CalendarEvent<any>[] = [
@@ -74,7 +138,10 @@ const events: CalendarEvent<any>[] = [
     actions: [],
     allDay: false,
     meta: {
-
+      system: {
+        index: 3,
+        length: 7
+      }
     }
   },
   {
@@ -82,6 +149,12 @@ const events: CalendarEvent<any>[] = [
     title: 'Mittem im Grünen',
     color: { ...colors.yellow },
     actions: [],
+    meta: {
+      system: {
+      index: 4,
+      length: 7
+      }
+    }
   },
   {
     start: subDays(endOfMonth(new Date()), 3),
@@ -89,6 +162,12 @@ const events: CalendarEvent<any>[] = [
     title: 'A long event that spans 2 months',
     color: { ...colors.blue },
     allDay: true,
+    meta: {
+      system: {
+      index: 5,
+      length: 7
+      }
+    }
   },
   {
     start: addHours(startOfDay(new Date()), 12),
@@ -96,5 +175,11 @@ const events: CalendarEvent<any>[] = [
     title: 'A draggable and resizable event',
     color: { ...colors.yellow },
     actions: [],
+    meta: {
+      system: {
+        index: 6,
+        length: 7
+      }
+    }
   },
 ];

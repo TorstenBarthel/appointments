@@ -6,10 +6,8 @@ import {
   OnInit,
 } from '@angular/core';
 
-import { Observable } from 'rxjs';
-
+import { Observable, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { select, Store } from '@ngrx/store'
 
 import {
@@ -18,9 +16,9 @@ import {
 } from 'angular-calendar';
 
 import { State } from './reducers/calender.reducer'
-import { loadCalenders } from './actions/calender.actions';
+import { loadCalenders, getEventBeforeAfterEvent, setSelectedAppointment } from './actions/calender.actions';
 
-import { getAllAppointments, getAppointmentsLoading } from './selectors/calender.selectors';
+import { getAllAppointments, getAppointmentsLoading, getAppointment,  } from './selectors/calender.selectors';
 
 @Component({
   selector: 'app-calender-view',
@@ -39,9 +37,10 @@ export class CalenderViewComponent implements OnInit  {
   locale = 'de'
   showMarker = true
 
-  eventsData: CalendarEvent
+  eventData: CalendarEvent
 
   appointments$: Observable<Array<CalendarEvent>>
+  selectedAppointment$: Observable<CalendarEvent>
   loading$: Observable<boolean>
 
   dayNames = [
@@ -55,18 +54,16 @@ export class CalenderViewComponent implements OnInit  {
     this.loading$ = this.store.pipe(select(getAppointmentsLoading))
 
     this.appointments$ = this.store.pipe(select(getAllAppointments))
+
+    this.selectedAppointment$ = this.store.pipe(select(getAppointment))
     
     this.store.dispatch(loadCalenders())
   }
 
   onHourClick($event: CalendarEvent): void {
 
-    this.openModal($event)
-  }
-
-  private openModal($event: CalendarEvent): void {
-        
-    this.eventsData = $event;
+    this.store.dispatch(setSelectedAppointment({ selectedAppointment: $event }))
+    
     this.modal.open(this.modalContent, { size: 'lg' });
   }
 
@@ -75,12 +72,17 @@ export class CalenderViewComponent implements OnInit  {
     this.viewDate = new Date($event)
   }
 
-  switchEvent(dir: string): void {
-    if (dir === 'left') {
-      // jump back
-      // this.store.dispatch()
-    } else {
-
-    }
+  /**
+   * @info An dieser Stelle musste ich mich voll auf den reaktiven Ansatz, 
+   *       der von Redux und ngrx gefordert wird, konzentrieren.
+   *       Als Lösung wird hier das Modal komplett reaktiv vom Store
+   *       mit Daten gefüllt. Weiterhin kommt im Template des Modals
+   *       ngrxLet zum Zugriff auf die Daten des Observables zum Einsatz.
+   */
+  switchEvent(dir: string, selectedAppointment: CalendarEvent): void {
+    this.store.dispatch(getEventBeforeAfterEvent({
+      dir,
+      formerEvent: selectedAppointment
+    }))
   }
 }

@@ -8,6 +8,8 @@ import { CalenderEffects } from './effects/calender.effects';
 import { CalendarModule, DateAdapter as AngularCalendarDateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
+import { LetModule } from '@ngrx/component';
+
 import { CalendarUtilsModule } from '../calendar-utils/calendar-utils.module'
 
 import { FormsModule } from '@angular/forms';
@@ -31,7 +33,8 @@ import { CalenderService } from './calender.service'
       useFactory: adapterFactory,
     }),
     CalendarUtilsModule,
-    FormsModule
+    FormsModule,
+    LetModule
 
   ],
   providers: [

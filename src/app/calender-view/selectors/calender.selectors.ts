@@ -9,4 +9,4 @@ export const getAppointmentsLoading = createSelector(selectCalenderState, state 
 
 export const getAllAppointments = createSelector(selectCalenderState, state => state.appointments)
 
-
+export const getAppointment = createSelector(selectCalenderState, state => state.selectedAppointment)

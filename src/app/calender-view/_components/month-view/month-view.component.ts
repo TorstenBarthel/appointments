@@ -54,5 +54,4 @@ export class MonthViewComponent implements OnInit {
       }
     });
   }
-
 }

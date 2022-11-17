@@ -1,11 +1,15 @@
 import { createAction, props } from '@ngrx/store';
+import { CalendarEvent } from 'angular-calendar';
+import { CalendarEventTitlePipe } from 'angular-calendar/modules/common/calendar-event-title.pipe';
 
 export enum CalenderActionTypes {
   LoadCalenders = '[Calender] Load Calenders',
   LoadCalendersSuccess = '[Calender] Load Calenders Success',
   LoadCalendersFailure = '[Calender] Load Calenders Failure',
-  DaySelected = '[Calender] Day Selected'
-
+  DaySelected = '[Calender] Day Selected',
+  GetEventBeforeAfterEvent = '[Calender] Get Event Before After Event',
+  GetEventBeforeAfterEventSuccess = '[Calender] Get Event Before After Event Success',
+  SetSelectedAppointment = '[Calender] Set Selected Appointment'
 }
 
 export const loadCalenders = createAction(
@@ -14,7 +18,7 @@ export const loadCalenders = createAction(
 
 export const loadCalendersSuccess = createAction(
   CalenderActionTypes.LoadCalendersSuccess,
-  props<{ data: any }>()
+  props<{ data: CalendarEvent[] }>()
 );
 
 export const loadCalendersFailure = createAction(
@@ -22,9 +26,26 @@ export const loadCalendersFailure = createAction(
   props<{ error: any }>()
 );
 
-export const daySelected = createAction(
-  CalenderActionTypes.DaySelected,
-  props<{ date: Date}>()
+// for paging through events/appointments
+export const getEventBeforeAfterEvent = createAction(
+  CalenderActionTypes.GetEventBeforeAfterEvent,
+  props<{ formerEvent: CalendarEvent, dir: string }>()
 )
 
-export type CalenderActionsType = typeof loadCalenders | typeof loadCalendersSuccess | typeof loadCalendersFailure
+export const getEventBeforeAfterEventSuccess = createAction(
+  CalenderActionTypes.GetEventBeforeAfterEventSuccess,
+  props<{ eventToDisplay: CalendarEvent }>()
+)
+
+export const setSelectedAppointment = createAction(
+  CalenderActionTypes.SetSelectedAppointment,
+  props<{ selectedAppointment: CalendarEvent}>()
+)
+
+export type CalenderActionsUnionType = 
+  typeof loadCalenders | 
+  typeof loadCalendersSuccess | 
+  typeof loadCalendersFailure | 
+  typeof getEventBeforeAfterEvent | 
+  typeof getEventBeforeAfterEventSuccess |
+  typeof setSelectedAppointment

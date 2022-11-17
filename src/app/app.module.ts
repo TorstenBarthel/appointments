@@ -20,8 +20,6 @@ import localeDe from '@angular/common/locales/de';
 
 registerLocaleData(localeDe);
 
-// import { ContextMenuModule } from 'ngx-contextmenu'
-
 @NgModule({
   declarations: [
     AppComponent
@@ -37,15 +35,8 @@ registerLocaleData(localeDe);
     CalenderViewModule,
     NgbModule,
     HttpClientModule
-    
-    
-    // ContextMenuModule.forRoot()
-    // CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory })
   ],
   providers: [ { provide: LOCALE_ID, useValue: 'de' } ],
-  exports: [
-    // ContextMenuModule
-  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
