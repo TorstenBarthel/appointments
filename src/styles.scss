@@ -3,13 +3,39 @@
 
 @import "../node_modules/angular-calendar/scss/angular-calendar.scss";
 
+// overwrite styling for scrolling in week calendar
+.cal-week-view .cal-time-events {
+  max-height: calc(100vh - 188px);
+  overflow-y: auto;
+}
+
+.cal-day-columns {
+  height: 100%;
+}
+
+// overwrite styling of calendar headers
+.cal-week-view .cal-day-headers .cal-header:not(:last-child) {
+  border-right: none !important;
+}
+
+.cal-week-view .cal-day-headers .cal-header:first-child {
+  border-left: none !important;
+}
+
+.cal-month-view .cal-cell-row.cal-header {
+  border-left: 1px #e1e1e1 solid;
+  border-right: 1px #e1e1e1 solid;
+  border-top: 1px #e1e1e1 solid;
+  border-bottom: none;
+}
+
 .wrapper {
   margin-top: 20px;
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 // month calendar styles
-.cal-month-view .cal-day-cell.cal-today .cal-day-number  {
+.cal-month-view .cal-day-cell.cal-today .cal-day-number {
   font-size: 1.2em !important;
 }
 

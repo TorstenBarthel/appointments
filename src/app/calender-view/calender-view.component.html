@@ -15,12 +15,10 @@
       <app-calendar-header [(view)]="view" [(viewDate)]="viewDate" [displayNowBtn]="true">
       </app-calendar-header>
 
-      <div class="scroll-view">
-        <mwl-calendar-week-view [viewDate]="viewDate" [events]="(appointments$ | async)!"
-          [headerTemplate]="headerTemplate" [eventTemplate]="eventTemplate" [dayStartHour]="8" [dayEndHour]="20"
-          [currentTimeMarkerTemplate]="currentTimeMarkerTemplate">
-        </mwl-calendar-week-view>
-      </div>
+      <mwl-calendar-week-view [viewDate]="viewDate" [events]="(appointments$ | async)!"
+        [headerTemplate]="headerTemplate" [eventTemplate]="eventTemplate" [dayStartHour]="8" [dayEndHour]="20"
+        [currentTimeMarkerTemplate]="currentTimeMarkerTemplate">
+      </mwl-calendar-week-view>
 
     </div>
   </div>
