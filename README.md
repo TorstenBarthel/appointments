@@ -13,23 +13,23 @@ Acceptance Criteria
 Build a fully usable calendar component with the following functionality:
 
 1. Main calendar view (see screenshot “calender.png”), which the view of a full week
-• Shows Appointments on their time and date
-• Arrows < > change weeks
-• Click on Appointment will open a modal with information about the Flat and Visitors. Do not "Create Viewing"
-• Landlords can scroll inside view to see time from 8am to 8pm
+- Shows Appointments on their time and date
+- Arrows < > change weeks
+- Click on Appointment will open a modal with information about the Flat and Visitors. Do not "Create Viewing"
+- Landlords can scroll inside view to see time from 8am to 8pm
 
 2. Small Month overview Calendar (in the upper left corner )
-• Click on date
-• update Week Calendar and show appointment in the given week • Change selected date
-• Arrows < > allow you to switch months
+- Click on date
+- update Week Calendar and show appointment in the given week • Change selected date
+- Arrows < > allow you to switch months
 
 3. Appointment Modal (see screenshot “click-on-appointment.png”)
-• Appears when you click on the appointment
-• Arrows will Switch to next Appointment
-• Hide arrows if there is none
+- Appears when you click on the appointment
+- Arrows will Switch to next Appointment
+- Hide arrows if there is none
 
 2. ## Delivery
-• Complete Project so we can just run it with npm run start to look if its work
-• without NodeModules
-• on complicated Parts it would be nice that he could add some comments
-• packed all together in a zip file
+- Complete Project so we can just run it with npm run start to look if its work
+- without NodeModules
+- on complicated Parts it would be nice that he could add some comments
+- packed all together in a zip file
