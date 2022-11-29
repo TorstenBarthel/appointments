@@ -7,7 +7,7 @@ We are using Angular 7 with NGRX, to get the data, we are using GraphQL as an in
 There’s also 2 screenshots to give you a visual of what to build. No need to make it look the same, this is to guide you.
 Feel free to select free and secure libraries using npm to achieve your goal.
 
-1. ## Task User Story
+## 1. Task User Story
 As a Landlord, I want to see a calendar view which displays all the appointments I have with applicants to my properties, so that I can get a clear overview them.
 Acceptance Criteria
 Build a fully usable calendar component with the following functionality:
@@ -28,7 +28,7 @@ Build a fully usable calendar component with the following functionality:
 - Arrows will Switch to next Appointment
 - Hide arrows if there is none
 
-2. ## Delivery
+## 2. Delivery
 - Complete Project so we can just run it with npm run start to look if its work
 - without NodeModules
 - on complicated Parts it would be nice that he could add some comments
